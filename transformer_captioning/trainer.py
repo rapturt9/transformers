@@ -2,6 +2,7 @@ import numpy as np
 from utils import  decode_captions
 
 import torch
+import torch.nn.functional as F
 
 
 class Trainer(object):
@@ -24,6 +25,11 @@ class Trainer(object):
         #TODO - Compute cross entropy loss between predictions and labels. 
         #Make sure to compute this loss only for indices where label is not the null token.
         #The loss should be averaged over batch and sequence dimensions. 
+        N, T, V = predictions.size()
+        predictions = predictions.view(-1, V) 
+        labels = labels.view(-1) 
+
+        loss = F.cross_entropy(predictions, labels, ignore_index=self.model._null, reduction='mean')
         return loss
     
     def val(self):
